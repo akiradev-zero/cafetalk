@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CafeTalk - 今いる場所で、つながる。</title>
+  <meta name="description" content="CafeTalk - 同じ場所にいる人とリアルタイムにチャット。カフェ、公園、図書館。今ここが、つながりの場所になる。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #faf9f7;
+      --bg-warm: #f5f0eb;
+      --bg-card: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #6b6560;
+      --text-muted: #9e9590;
+      --accent: #d4764e;
+      --accent-hover: #c0603a;
+      --accent-light: #fdf0eb;
+      --border: #e8e3de;
+      --border-light: #f0ece8;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+      --shadow-xl: 0 20px 60px rgba(0,0,0,0.1);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-lg: 24px;
+      --font-jp: 'Noto Sans JP', sans-serif;
+      --font-en: 'Inter', sans-serif;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-jp);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body[lang="en"] { font-family: var(--font-en); line-height: 1.6; }
+
+    /* ===== NAV ===== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 2rem;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(250, 249, 247, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid transparent;
+      transition: var(--transition);
+    }
+
+    nav.scrolled {
+      border-bottom-color: var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .nav-logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .nav-logo-text {
+      font-weight: 600;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 400;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .lang-toggle {
+      display: flex;
+      align-items: center;
+      background: var(--bg-warm);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid var(--border);
+    }
+
+    .lang-btn {
+      padding: 5px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .lang-btn.active {
+      background: var(--bg-card);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .mobile-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      margin: 5px 0;
+      transition: var(--transition);
+      border-radius: 2px;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 100px 2rem 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-bg-gradient {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.4;
+    }
+
+    .hero-bg-gradient.g1 {
+      top: -100px;
+      right: -100px;
+      background: #f0d5c4;
+    }
+
+    .hero-bg-gradient.g2 {
+      bottom: -150px;
+      left: -100px;
+      background: #e8d5c8;
+      opacity: 0.3;
+    }
+
+    .hero-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-light);
+      border: 1px solid rgba(212, 118, 78, 0.15);
+      border-radius: 100px;
+      font-size: 0.82rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 0.6s ease 0.1s both;
+    }
+
+    .hero h1 .accent { color: var(--accent); }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      line-height: 1.9;
+      max-width: 480px;
+      margin-bottom: 2.5rem;
+      animation: fadeInUp 0.6s ease 0.2s both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      animation: fadeInUp 0.6s ease 0.3s both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 25px rgba(212, 118, 78, 0.3);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+      background: var(--bg-warm);
+    }
+
+    .hero-visual {
+      position: relative;
+      animation: fadeInUp 0.8s ease 0.3s both;
+    }
+
+    .phone-mockup {
+      width: 300px;
+      height: 600px;
+      background: #1a1a1a;
+      border-radius: 40px;
+      padding: 12px;
+      margin: 0 auto;
+      box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.1) inset;
+      position: relative;
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-card);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 28px;
+      background: #1a1a1a;
+      border-radius: 0 0 18px 18px;
+      z-index: 2;
+    }
+
+    .phone-app {
+      padding: 42px 16px 16px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .phone-header h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .phone-header p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .chat-list {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 4px;
+      transition: var(--transition);
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    .chat-item:nth-child(1) { animation-delay: 0.6s; }
+    .chat-item:nth-child(2) { animation-delay: 0.75s; }
+    .chat-item:nth-child(3) { animation-delay: 0.9s; }
+    .chat-item:nth-child(4) { animation-delay: 1.05s; }
+
+    .chat-item:hover { background: var(--bg-warm); }
+
+    .chat-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .chat-info { flex: 1; min-width: 0; }
+
+    .chat-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .chat-preview {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+
+    .chat-time {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+    }
+
+    .chat-unread {
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      font-size: 0.55rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .chat-location-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 6px;
+      background: var(--accent-light);
+      border-radius: 4px;
+      font-size: 0.55rem;
+      color: var(--accent);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== FLOATING ELEMENTS ===== */
+    .float-badge {
+      position: absolute;
+      background: var(--bg-card);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      animation: float 3s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    .float-badge.fb1 {
+      top: 120px;
+      left: -20px;
+      animation-delay: 0s;
+    }
+
+    .float-badge.fb2 {
+      bottom: 140px;
+      right: -10px;
+      animation-delay: 1.5s;
+    }
+
+    .float-badge-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ===== SECTIONS ===== */
+    section {
+      padding: 100px 2rem;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 20px;
+      height: 1.5px;
+      background: var(--accent);
+    }
+
+    .section-title {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 540px;
+      line-height: 1.9;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-section { background: var(--bg); }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+
+    .step-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2.5rem 2rem;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .step-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .step-card h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .step-card p {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* ===== FEATURES ===== */
+    .features-section { background: var(--bg-warm); }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      transition: var(--transition);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    /* ===== SCENARIOS ===== */
+    .scenarios-section { background: var(--bg); }
+
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .scenario-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .scenario-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-lg);
+      border-color: transparent;
+    }
+
+    .scenario-img {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scenario-body {
+      padding: 1.5rem;
+    }
+
+    .scenario-body h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .scenario-body p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ===== CTA ===== */
+    .cta-section {
+      background: #1a1a1a;
+      color: white;
+      text-align: center;
+    }
+
+    .cta-section .section-label {
+      color: rgba(255,255,255,0.5);
+    }
+
+    .cta-section .section-label::before {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .cta-section .section-title {
+      color: white;
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-desc {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.6);
+      max-width: 500px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.8;
+    }
+
+    .cta-email-form {
+      display: flex;
+      gap: 10px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    .cta-email-form input {
+      flex: 1;
+      padding: 14px 20px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 0.92rem;
+      font-family: inherit;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .cta-email-form input::placeholder { color: rgba(255,255,255,0.35); }
+    .cta-email-form input:focus { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+
+    .cta-email-form button {
+      padding: 14px 28px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+      white-space: nowrap;
+    }
+
+    .cta-email-form button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .cta-note {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.3);
+      margin-top: 1rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border-light);
+      background: var(--bg);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+    }
+
+    .footer-brand {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .hero h1 { font-size: 2.6rem; }
+      .phone-mockup { width: 260px; height: 520px; }
+      .float-badge { display: none; }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1.2rem; }
+
+      .nav-links {
+        display: none;
+        position: fixed;
+        top: 72px;
+        left: 0;
+        right: 0;
+        background: var(--bg-card);
+        flex-direction: column;
+        padding: 1.5rem;
+        gap: 1rem;
+        border-bottom: 1px solid var(--border-light);
+        box-shadow: var(--shadow-md);
+      }
+
+      .nav-links.open { display: flex; }
+      .mobile-toggle { display: block; }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 3rem;
+      }
+
+      .hero h1 { font-size: 2.2rem; }
+
+      .hero-desc {
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .hero-visual { order: -1; }
+      .phone-mockup { width: 240px; height: 480px; }
+
+      section { padding: 60px 1.2rem; }
+      .section-title { font-size: 1.8rem; }
+
+      .steps-grid,
+      .scenarios-grid { grid-template-columns: 1fr; }
+
+      .features-grid { grid-template-columns: 1fr; }
+
+      .cta-section .section-title { font-size: 2rem; }
+
+      .cta-email-form {
+        flex-direction: column;
+      }
+
+      .footer-inner {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+
+    /* ===== SCROLL ANIMATIONS ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">☕</div>
+      <span class="nav-logo-text">CafeTalk</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#how" data-ja="使い方" data-en="How It Works">使い方</a></li>
+      <li><a href="#features" data-ja="機能" data-en="Features">機能</a></li>
+      <li><a href="#scenarios" data-ja="シーン" data-en="Scenarios">シーン</a></li>
+      <li>
+        <div class="lang-toggle">
+          <button class="lang-btn active" data-lang="ja" id="langJa">JP</button>
+          <button class="lang-btn" data-lang="en" id="langEn">EN</button>
+        </div>
+      </li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="hero-bg-gradient g1"></div>
+      <div class="hero-bg-gradient g2"></div>
+    </div>
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span data-ja="beta受付中" data-en="Now in beta">beta受付中</span>
+        </div>
+        <h1 data-ja='今いる場所で、<span class="accent">つながる</span>。' data-en='Connect with those <span class="accent">right here</span>.'>今いる場所で、<span class="accent">つながる</span>。</h1>
+        <p class="hero-desc" data-ja="カフェ、公園、図書館。同じ場所にいる人たちと、匿名で気軽にチャット。顔を見知らない人たちだけど、気づかないうちに、新しい出会いが生まれる。" data-en="Cafes, parks, libraries. Chat anonymously with people who happen to be in the same place. Without even realizing it, new connections are born.">カフェ、公園、図書館。同じ場所にいる人たちと、匿名で気軽にチャット。顔を見知らない人たちだけど、気づかないうちに、新しい出会いが生まれる。</p>
+        <div class="hero-actions">
+          <button class="btn-primary" data-ja="無料で始める" data-en="Get Started Free">無料で始める</button>
+          <a href="#how" class="btn-secondary" data-ja="もっと見る →" data-en="Learn More →">もっと見る →</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="float-badge fb1">
+          <div class="float-badge-icon" style="background: #e8f5e9;">📍</div>
+          <span data-ja="渋谷のカフェで3人オンライン" data-en="3 online at Shibuya cafe">渋谷のカフェで3人オンライン</span>
+        </div>
+        <div class="float-badge fb2">
+          <div class="float-badge-icon" style="background: #fff3e0;">💬</div>
+          <span data-ja="新しいメッセージ" data-en="New message">新しいメッセージ</span>
+        </div>
+        <div class="phone-mockup">
+          <div class="phone-screen">
+            <div class="phone-notch"></div>
+            <div class="phone-app">
+              <div class="phone-header">
+                <h3 data-ja="現在地のチャット" data-en="Nearby Chats">現在地のチャット</h3>
+                <p data-ja="渋谷区 • 3つのエリア" data-en="Shibuya • 3 areas">渋谷区 • 3つのエリア</p>
+              </div>
+              <div class="chat-list">
+                <div class="chat-item">
+                  <div class="chat-avatar" style="background: #e8f5e9;">☕</div>
+                  <div class="chat-info">
+                    <div class="chat-name" data-ja="Starbucks 渋谷店" data-en="Starbucks Shibuya">Starbucks 渋谷店</div>
+                    <div class="chat-preview" data-ja="すみません、WiFiのパスワード知りま..." data-en="Excuse me, do you know the WiFi...">すみません、WiFiのパスワード知りま...</div>
+                    <div class="chat-location-tag">📍 80m</div>
+                  </div>
+                  <div class="chat-meta">
+                    <span class="chat-time">2m</span>
+                    <span class="chat-unread">3</span>
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div class="chat-avatar" style="background: #e3f2fd;">📚</div>
+                  <div class="chat-info">
+                    <div class="chat-name" data-ja="代々木図書館" data-en="Yoyogi Library">代々木図書館</div>
+                    <div class="chat-preview" data-ja="今日の読み放題、使えますか？" data-en="Can we use the all-you-can-read today?">今日の読み放題、使えますか？</div>
+                    <div class="chat-location-tag">📍 200m</div>
+                  </div>
+                  <div class="chat-meta">
+                    <span class="chat-time">15m</span>
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div class="chat-avatar" style="background: #fce4ec;">🌳</div>
+                  <div class="chat-info">
+                    <div class="chat-name" data-ja="代々木公園" data-en="Yoyogi Park">代々木公園</div>
+                    <div class="chat-preview" data-ja="今日いい天気ですね〜" data-en="Nice weather today, isn't it?">今日いい天気ですね〜</div>
+                    <div class="chat-location-tag">📍 350m</div>
+                  </div>
+                  <div class="chat-meta">
+                    <span class="chat-time">30m</span>
+                  </div>
+                </div>
+                <div class="chat-item">
+                  <div class="chat-avatar" style="background: #f3e5f5;">🎸</div>
+                  <div class="chat-info">
+                    <div class="chat-name" data-ja="おしゃれカフェ横丁" data-en="Stylish Cafe Alley">おしゃれカフェ横丁</div>
+                    <div class="chat-preview" data-ja="ここラテアート美味しくて..." data-en="The latte art here is so good...">ここラテアート美味しくて...</div>
+                    <div class="chat-location-tag">📍 420m</div>
+                  </div>
+                  <div class="chat-meta">
+                    <span class="chat-time">1h</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how-section" id="how">
+    <div class="section-inner">
+      <div class="section-label" data-ja="使い方" data-en="HOW IT WORKS">使い方</div>
+      <h2 class="section-title reveal" data-ja="三つのステップで、始まる" data-en="Start in three steps">三つのステップで、始まる</h2>
+      <p class="section-desc reveal" data-ja="アカウント作成不要。今いる場所を共有するだけで、すぐにチャットを始められます。" data-en="No account needed. Just share your location and start chatting right away.">アカウント作成不要。今いる場所を共有するだけで、すぐにチャットを始められます。</p>
+      <div class="steps-grid">
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-number">1</div>
+          <h3 data-ja="位置情報をオン" data-en="Enable Location">位置情報をオン</h3>
+          <p data-ja="ブラウザで位置情報の許可を.tap。GPSで現在地を自動検出します。" data-en="Allow location access in your browser. Your current location is auto-detected via GPS.">ブラウザで位置情報の許可を.tap。GPSで現在地を自動検出します。</p>
+        </div>
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-number">2</div>
+          <h3 data-ja="エリアを選ぶ" data-en="Choose an Area">エリアを選ぶ</h3>
+          <p data-ja="近くに活発にしているチャットルームの一覧が表示されます。興味のある場所を選んでください。" data-en="A list of active chatrooms near you appears. Pick the place that interests you.">近くに活発にしているチャットルームの一覧が表示されます。興味のある場所を選んでください。</p>
+        </div>
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-number">3</div>
+          <h3 data-ja="チャット開始" data-en="Start Chatting">チャット開始</h3>
+          <p data-ja="匿名で参加。名前も顔写真も不要。同じ場所にいる人たちとの会話を楽しんでください。" data-en="Join anonymously. No name or photo required. Enjoy conversations with people at the same location.">匿名で参加。名前も顔写真も不要。同じ場所にいる人たちとの会話を楽しんでください。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features-section" id="features">
+    <div class="section-inner">
+      <div class="section-label" data-ja="機能" data-en="FEATURES">機能</div>
+      <h2 class="section-title reveal" data-ja="安全で、快適な" data-en="Safe & Comfortable">安全で、快適な</h2>
+      <p class="section-desc reveal" data-ja="匿名性と安全性を両立。使いやすさと同時に、大切な情報を守る設計です。" data-en="Balancing anonymity and safety. We provide features that are both secure and easy to use.">匿名性と安全性を両立。使いやすさと同時に、大切な情報を守る設計です。</p>
+      <div class="features-grid">
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon" style="background: #e8f5e9;">🔒</div>
+          <h3 data-ja="完全匿名" data-en="Fully Anonymous">完全匿名</h3>
+          <p data-ja="メールアドレスやSNS連携なし。好きなハンドルネームで参加できます。" data-en="No email or social media required. Join with any handle you like.">メールアドレスやSNS連携なし。好きなハンドルネームで参加できます。</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon" style="background: #e3f2fd;">📍</div>
+          <h3 data-ja="位置ベース" data-en="Location Based">位置ベース</h3>
+          <p data-ja="正確な位置は公開されません。50m単位のエリア単位で表示されます。" data-en="Your exact location is never shared. Areas are shown in 50m increments.">正確な位置は公開されません。50m単位のエリア単位で表示されます。</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon" style="background: #fff3e0;">🛡️</div>
+          <h3 data-ja="モデレーション" data-en="Moderation">モデレーション</h3>
+          <p data-ja="AI + コミュニティによる二重のモデレーション。不適切な投稿は即座にフィルタリング。" data-en="Dual moderation by AI + community. Inappropriate posts are filtered instantly.">AI + コミュニティによる二重のモデレーション。不適切な投稿は即座にフィルタリング。</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon" style="background: #fce4ec;">⏱️</div>
+          <h3 data-ja="自動削除" data-en="Auto Delete">自動削除</h3>
+          <p data-ja="7日間でメッセージが自動削除。デジタルの足跡を最小限に保ちます。" data-en="Messages auto-delete after 7 days. Keep your digital footprint minimal.">7日間でメッセージが自動削除。デジタルの足跡を最小限に保ちます。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="scenarios-section" id="scenarios">
+    <div class="section-inner">
+      <div class="section-label" data-ja="シーン" data-en="SCENARIOS">シーン</div>
+      <h2 class="section-title reveal" data-ja="いろんな場所で、いろんな出会い" data-en="Connections everywhere you go">いろんな場所で、いろんな出会い</h2>
+      <p class="section-desc reveal" data-ja="日常のあらゆる場面で、CafeTalkは新しいつながりを生み出します。" data-en="In every aspect of daily life, CafeTalk creates new connections.">日常のあらゆる場面で、CafeTalkは新しいつながりを生み出します。</p>
+      <div class="scenarios-grid">
+        <div class="scenario-card reveal reveal-delay-1">
+          <div class="scenario-img" style="background: linear-gradient(135deg, #fef3e2, #fde8d0);">☕</div>
+          <div class="scenario-body">
+            <h3 data-ja="カフェ" data-en="Cafes">カフェ</h3>
+            <p data-ja="隣の席の人と話しかける勇気がなくても、チャットなら気軽に声をかけられます。" data-en="Even if you don't have the courage to talk to the person next to you, chatting makes it easy.">隣の席の人と話しかける勇気がなくても、チャットなら気軽に声をかけられます。</p>
+          </div>
+        </div>
+        <div class="scenario-card reveal reveal-delay-2">
+          <div class="scenario-img" style="background: linear-gradient(135deg, #e8f5e9, #d4edda);">🌳</div>
+          <div class="scenario-body">
+            <h3 data-ja="公園" data-en="Parks">公園</h3>
+            <p data-ja="散歩中やジョギング中に、同じ公園にいる人たちとおしゃべり。テニスの相手を見つけたり。" data-en="Chat with people at the same park while walking or jogging. Find a tennis partner.">散歩中やジョギング中に、同じ公園にいる人たちとおしゃべり。テニスの相手を見つけたり。</p>
+          </div>
+        </div>
+        <div class="scenario-card reveal reveal-delay-3">
+          <div class="scenario-img" style="background: linear-gradient(135deg, #e3f2fd, #d1ecf1);">📚</div>
+          <div class="scenario-body">
+            <h3 data-ja="図書館・大学" data-en="Libraries & Universities">図書館・大学</h3>
+            <p data-ja="勉強中の仲間を見つけたり。同じ参考書を使っている人を見つけたり、勉強会を企画したり。" data-en="Find study companions. Locate people using the same textbooks or form study groups.">勉強中の仲間を見つけたり。同じ参考書を使っている人を見つけたり、勉強会を企画したり。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="section-inner">
+      <div class="section-label" data-ja="参加する" data-en="JOIN US">参加する</div>
+      <h2 class="section-title reveal" data-ja="今日から、あなたの近所で<br>つながりが始まる" data-en="Start connecting in your<br>neighborhood today">今日から、あなたの近所で<br>つながりが始まる</h2>
+      <p class="cta-desc reveal" data-ja="リリース時にご招待いたします。メールアドレスを入力してお待ちください。" data-en="We'll invite you at launch. Enter your email and stay tuned.">リリース時にご招待いたします。メールアドレスを入力してお待ちください。</p>
+      <form class="cta-email-form reveal" onsubmit="event.preventDefault(); this.querySelector('button').textContent = this.querySelector('button').dataset.ja === '送信済み' ? '送信済み ✓' : 'Sent ✓';">
+        <input type="email" placeholder="you@example.com" required>
+        <button type="submit" data-ja="送る" data-en="Submit">送る</button>
+      </form>
+      <p class="cta-note reveal" data-ja="スパム一切なし。いつでも解除可能。" data-en="No spam ever. Unsubscribe anytime.">スパム一切なし。いつでも解除可能。</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-logo">☕</div>
+        <span class="footer-brand">CafeTalk</span>
+      </div>
+      <span class="footer-copy">© 2026 CafeTalk. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script>
+    // ===== SCROLL REVEAL =====
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObserver.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(el => revealObserver.observe(el));
+
+    // ===== NAV SCROLL =====
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ===== MOBILE MENU =====
+    const mobileToggle = document.getElementById('mobileToggle');
+    const navLinks = document.getElementById('navLinks');
+    mobileToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    // ===== LANGUAGE TOGGLE =====
+    const langJa = document.getElementById('langJa');
+    const langEn = document.getElementById('langEn');
+
+    function setLang(lang) {
+      document.documentElement.lang = lang;
+      document.body.lang = lang;
+      langJa.classList.toggle('active', lang === 'ja');
+      langEn.classList.toggle('active', lang === 'en');
+
+      document.querySelectorAll('[data-ja][data-en]').forEach(el => {
+        el.innerHTML = lang === 'ja' ? el.dataset.ja : el.dataset.en;
+      });
+    }
+
+    langJa.addEventListener('click', () => setLang('ja'));
+    langEn.addEventListener('click', () => setLang('en'));
+
+    // ===== SMOOTH SCROLL =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const target = document.querySelector(a.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          navLinks.classList.remove('open');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
